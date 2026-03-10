@@ -1,0 +1,5 @@
+{
+  "name": "LTM 策略自动化配置平台",
+  "description": "面向运维人员的负载均衡策略填报、差异分析及脚本自动生成工具，支持 F5 与深信服设备。",
+  "requestFramePermissions": []
+}
