@@ -356,17 +356,22 @@ export default function App() {
   const [reqDataMap, setReqDataMap] = useState<Record<string, Requirement>>({}); 
 
   useEffect(() => {
+    console.log('App initialized with requirements:', REQUIREMENTS.length);
     const defaults: any = {};
     const initData: any = {};
-    REQUIREMENTS.forEach(req => {
-      initData[req.id] = req; 
-      const analysis = analyzeRequirement(req);
-      const reqActions: any = {};
-      analysis.actions.forEach(act => { if (!act.disabled) reqActions[act.id] = true; });
-      defaults[req.id] = reqActions;
-    });
-    setUserSelections(defaults);
-    setReqDataMap(initData);
+    try {
+      REQUIREMENTS.forEach(req => {
+        initData[req.id] = req; 
+        const analysis = analyzeRequirement(req);
+        const reqActions: any = {};
+        analysis.actions.forEach(act => { if (!act.disabled) reqActions[act.id] = true; });
+        defaults[req.id] = reqActions;
+      });
+      setUserSelections(defaults);
+      setReqDataMap(initData);
+    } catch (err) {
+      console.error('Initialization error:', err);
+    }
   }, []);
 
   const handleFormSubmit = (updatedReq: Requirement) => {
@@ -390,6 +395,18 @@ export default function App() {
   const currentAnalysis = useMemo(() => analyzeRequirement(currentReqData), [currentReqData]);
   const currentSelections = userSelections[activeReqId] || {};
   const allConfirmed = REQUIREMENTS.every(r => confirmedReqs[r.id]);
+  
+  if (!activeReqId || REQUIREMENTS.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-100">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-800 mb-2">未加载到工单需求</h2>
+          <p className="text-slate-500">请检查 mockData.ts 中的配置或联系系统管理员。</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-100 font-sans text-slate-800 text-sm overflow-hidden">
